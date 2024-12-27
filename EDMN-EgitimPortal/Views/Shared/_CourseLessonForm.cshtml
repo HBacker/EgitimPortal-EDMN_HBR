@@ -1,0 +1,38 @@
+﻿@model EgitimPortalFinal.ViewModels.CourseLessonModel
+
+<form asp-action="@ViewData["Action"]" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <input type="hidden" asp-for="CourseId" />
+
+    <div class="form-group">
+        <label asp-for="Name">Ders Adı</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="VideoFile">Video</label>
+        <div class="custom-file">
+            <input type="file" asp-for="VideoFile" class="custom-file-input" accept="video/*" />
+            <label class="custom-file-label">Dosya Seç...</label>
+        </div>
+        <span asp-validation-for="VideoFile" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">@ViewData["ButtonText"]</button>
+    <a asp-action="ListLessons" asp-route-courseId="@Model.CourseId" class="btn btn-secondary">Geri Dön</a>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Dosya seçildiğinde label'ı güncelle
+            $(document).on('change', '.custom-file-input', function () {
+                let fileName = $(this).val().split('\\').pop();
+                $(this).next('.custom-file-label').html(fileName);
+            });
+        });
+    </script>
+}

@@ -1,0 +1,192 @@
+﻿@model CourseLessonModel
+@{
+    ViewData["Title"] = "Ders Oluştur";
+    Layout = "_layoutAdminLTE";
+}
+
+<div style="margin-left:270px; margin-top: 15px;">
+    <h1>Yeni Ders</h1>
+    <hr />
+</div>
+
+<div class="container" style="margin-left:275px;margin-top:30px">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Üst Kısım -->
+            <div class="create-lesson-header mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <select id="courseSelect" style="width: 450px;" class="form-select form-select-lg" asp-items="ViewBag.Courses">
+                                    <option value="">Kurs Seçiniz</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <button type="button" class="btn btn-dark" id="addLessonBtn">
+                                    <i class="fas fa-plus me-2"></i>Ders Ekle
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <form id="lessonForm" asp-action="CreateLesson" method="post" enctype="multipart/form-data" style="display:none;">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="CourseId" id="selectedCourseId" />
+
+                <div id="lessonFields">
+                    <!-- Dersler buraya eklenecek -->
+                </div>
+
+                <div class="form-actions mt-4">
+                    <button type="submit" class="btn btn-dark">
+                        <i class="fas fa-save me-2"></i>Kaydet
+                    </button>
+                    <a asp-action="LessonList" class="btn btn-light ms-2">İptal</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .lesson-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        background-color: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .lesson-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #f8f9fa;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }
+
+    .lesson-number {
+        font-weight: 600;
+        color: #333;
+        font-size: 1.1em;
+    }
+
+    .lesson-body {
+        padding: 20px;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        let lessonCounter = 0;
+
+        document.getElementById('addLessonBtn').addEventListener('click', function () {
+            addNewLesson();
+        });
+
+        function addNewLesson() {
+            const courseId = document.getElementById('courseSelect').value;
+            if (!courseId) {
+                alert('Lütfen önce bir kurs seçin!');
+                return;
+            }
+
+            const container = document.getElementById('lessonFields');
+            const lessonDiv = document.createElement('div');
+            lessonDiv.className = 'lesson-card';
+            lessonDiv.id = `lesson-${lessonCounter}`;
+
+            lessonDiv.innerHTML = `
+                        <div class="lesson-header">
+                            <span class="lesson-number">Ders ${lessonCounter + 1}</span>
+                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeLesson(${lessonCounter})">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="lesson-body">
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label class="form-label">Ders Adı</label>
+                                        <input type="text"
+                                               name="Lessons[${lessonCounter}].Name"
+                                               class="form-control"
+                                               placeholder="Ders adını girin"
+                                               required />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Video</label>
+                                        <div class="input-group">
+                                            <input type="file"
+                                                   name="Lessons[${lessonCounter}].VideoFile"
+                                                   class="form-control"
+                                                   accept="video/*"
+                                                   required />
+                                        </div>
+                                        <small class="text-muted">Desteklenen formatlar: MP4, WebM, OGG</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Thumbnail</label>
+                                        <div class="input-group">
+                                            <input type="file"
+                                                   name="Lessons[${lessonCounter}].ThumbnailFile"
+                                                   class="form-control"
+                                                   accept="image/*" />
+                                        </div>
+                                        <small class="text-muted">Desteklenen formatlar: JPG, PNG, WebP</small>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="Lessons[${lessonCounter}].OrderNo" value="${lessonCounter + 1}" />
+                                <input type="hidden" name="Lessons[${lessonCounter}].CourseId" value="${courseId}" />
+                            </div>
+                        </div>
+                    `;
+
+            container.appendChild(lessonDiv);
+            lessonCounter++;
+            updateOrderNumbers();
+            document.getElementById('lessonForm').style.display = 'block';
+        }
+
+        function removeLesson(index) {
+            const lessonDiv = document.getElementById(`lesson-${index}`);
+            lessonDiv.remove();
+            updateOrderNumbers();
+
+            if (document.querySelectorAll('.lesson-card').length === 0) {
+                document.getElementById('lessonForm').style.display = 'none';
+            }
+        }
+
+        function updateOrderNumbers() {
+            const cards = document.querySelectorAll('.lesson-card');
+            cards.forEach((card, index) => {
+                const numberSpan = card.querySelector('.lesson-number');
+                const orderInput = card.querySelector('input[name$="].OrderNo"]');
+                numberSpan.textContent = `Ders ${index + 1}`;
+                if (orderInput) {
+                    orderInput.value = index + 1;
+                }
+            });
+        }
+
+        document.getElementById('courseSelect').addEventListener('change', function () {
+            const courseId = this.value;
+            document.getElementById('selectedCourseId').value = courseId;
+            document.getElementById('lessonFields').innerHTML = '';
+            lessonCounter = 0;
+            document.getElementById('lessonForm').style.display = 'none';
+        });
+    </script>
+}

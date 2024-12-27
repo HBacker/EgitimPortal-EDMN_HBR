@@ -1,0 +1,48 @@
+﻿@model IEnumerable<EgitimPortalFinal.Models.Course>
+
+@{
+    ViewData["Title"] = "Arama Sonuçları";
+}
+
+<h1 style="margin-top: 50px; margin-bottom: 30px;">Arama Sonuçları</h1>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-warning" role="alert" style="margin-bottom: 300px;">
+        <p>Aradığınız kriterlere uygun sonuç bulunamadı. Bizim için fazla iyisin dostum :)</p>
+    </div>
+}
+else
+{
+    <div class="details-card-container" style="margin-bottom: 250px;">
+        @foreach (var item in Model)
+        {
+            <div class="details-course-card">
+                <div class="details-course-card-img">
+                    @if (string.IsNullOrEmpty(item.PhotoUrl) ||
+                   item.PhotoUrl == "-" ||
+                   item.PhotoUrl == "/CoursePhotos/-")
+                    {
+                        <img src="/CoursePhotos/thumbnails/defaultCourseCover.png" class="img-fluid" alt="Educate Me Now" />
+                    }
+                    else
+                    {
+                        <img src="~/CoursePhotos/@item.PhotoUrl" class="img-fluid" alt="@item.Title" />
+                    }
+                </div>
+                <div class="details-course-card-body">
+                    <h4 class="details-course-card-title">
+                        <a asp-action="Details" asp-route-id="@item.Id" class="details-course-card-title" style="text-decoration:none; color:black;">
+                            @item.Title
+                        </a>
+                    </h4>
+                    <p class="details-course-card-description">@item.Description</p>
+                </div>
+                <hr class="details-course-card-divider">
+                <div class="details-course-card-footer">
+                    <a href="@Url.Action("Details", "Course", new { id = item.Id })" class="details-btn-incele">İncele</a>
+                </div>
+            </div>
+        }
+    </div>
+}

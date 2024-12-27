@@ -1,0 +1,28 @@
+﻿@{
+    ViewData["Title"] = "Rol Listesi";
+    Layout = "_layoutAdminLTE";
+}
+@model List<AppRole>
+<h1 style="position:relative; left:270px; top:20px">Roller</h1>
+<a asp-action="RoleAdd" class="btn btn-primary" style="position:relative; left:270px; top:30px">Rol Ekle</a>
+<div class="row" style="position:relative; left:270px; top:50px">
+    <div class="col-md-8">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.Name</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

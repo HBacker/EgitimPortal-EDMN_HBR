@@ -1,0 +1,30 @@
+﻿@using Microsoft.AspNetCore.Http;
+@inject IHttpContextAccessor Accessor
+<ul class="navbar-nav ms-auto" style="font-family: TRT;">
+    @if (User.Identity.IsAuthenticated)
+
+    {
+        <li class="nav-item dropdown" style="border: 1px solid #ccc; border-radius: 10px;">
+            <a class="btn custom-login-btn dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-solid fa-user"></i> @User.Identity.Name
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu" style="width: 100%;">
+                @if (User.IsInRole("admin"))
+
+                {
+                    <li><a class="dropdown-item" asp-area="" asp-controller="Admin" asp-action="List">Admin Dashboard</a></li>
+                }
+                <li><a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="Logout">Çıkış Yap</a></li>
+            </ul>
+        </li>
+    }
+
+    else
+
+    {
+        <div class="d-flex align-items-center">
+            <a class="custom-login-btn me-2" asp-area="" asp-controller="Home" asp-action="Login">Oturum Aç</a>
+            <a class="custom-signup-btn" asp-area="" asp-controller="Home" asp-action="Register">Kayıt Ol</a>
+        </div>
+    }
+</ul>

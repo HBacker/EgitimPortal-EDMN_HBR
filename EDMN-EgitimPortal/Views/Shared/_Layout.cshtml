@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - EgitimPortalFinal</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/EgitimPortalFinal.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/navstyle.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://wp.itsmycloud.space/wp-content/uploads/tarzan-player_forest.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" />
+    <link rel="stylesheet" href="//releases.flowplayer.org/7.2.7/skin/skin.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+
+    <style>    
+
+    </style>
+</head>
+<body>
+    <header>
+        <nav id="hbrNav" class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+            <div class="container-fluid d-flex align-items-center">
+                <!-- Logo -->
+                <a class="navbar-brand me-4" asp-controller="Course" asp-action="Course">
+                    <img src="/adminLayoutPhotos/egitimPortali.png" style="height: 60px; width: 80px;" alt="Logo">
+                </a>
+
+                <!-- Explore Link -->
+                <div class="nav-explore">
+                    <a class="nav-explore-button">Keşfet</a>
+                    <ul class="nav-explore-menu">
+                        <li class="nav-explore-header">Kurslar</li>
+                        <li><a asp-area="" asp-controller="" asp-action="" class="nav-explore-item">Anasayfa</a></li>
+                        <li><a asp-area="" asp-controller="Course" asp-action="Programlama" class="nav-explore-item">Programlama</a></li>
+                        <li><a asp-area="" asp-controller="Course" asp-action="Wordpress" class="nav-explore-item">Wordpress</a></li>
+                        <li><a asp-area="" asp-controller="Course" asp-action="SEO" class="nav-explore-item">SEO</a></li>
+                    </ul>
+                </div>
+
+
+
+
+
+
+
+
+                <!-- Search Box -->
+                <form class="d-flex flex-grow-1 custom-searchbox" role="search" asp-controller="Course" asp-action="Search" method="get">
+                    <div class="input-group w-100" style="border-radius: 50px; height: 50px;">
+                        <!-- Arama butonu -->
+                        <button class="btn search-btn" type="submit">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
+                        <!-- Arama kutusu -->
+                        <input type="text" class="form-control search-input" name="keyword" placeholder="Keşfetmek için arayın, sınırlarınızı zorlayın!" onkeydown="if(event.key === 'Enter'){this.form.submit();}" />
+                    </div>
+                </form>
+
+
+
+
+
+                <partial name="_LoginPartial"></partial>
+
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+    <footer style="background-color: black; color: white; padding: 20px 0;">
+        <div style="text-align: center;">
+            <p style="margin: 0;">
+                <i class="fas fa-copyright"></i> 2024 Educate Me Now. All Rights Reserved.
+            </p>
+            <p>
+                <a asp-controller="Home" asp-action="About" style="color: white; margin: 0 10px; text-decoration: none;">Hakkımda</a>|
+                <a href="https://github.com/HBackeR" target="_blank"> <i class="fa-brands fa-github"></i></a>
+                <a href="https://linkedin.com/in/barzan-aslan" target="_blank"> <i class="fa-brands fa-linkedin"></i></a>
+                <a href="https://instagram.com/cdngokhan" target="_blank"> <i class="fa-brands fa-instagram"></i></a>
+                <a href="https://facebook.com/inquisitor.gokhan" target="_blank"> <i class="fa-brands fa-facebook"></i></a>
+            </p>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+    <script src="//releases.flowplayer.org/7.2.7/flowplayer.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

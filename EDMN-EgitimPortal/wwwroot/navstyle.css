@@ -1,0 +1,78 @@
+﻿/* Genel Navbar Tasarımı */
+#hbrNav {
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Alt gölge */
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    padding: 0.5rem 1rem;
+}
+
+/* Search Box */
+.custom-searchbox {
+    margin-right: 1rem;
+}
+
+    .custom-searchbox .input-group {
+        height: 42px;
+        border-radius: 21px;
+        border: 1px solid #ddd;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        width: 100%; /* Tüm boşluğu kaplar */
+    }
+
+    .custom-searchbox .search-input {
+        flex: 1;
+        border: none;
+        outline: none;
+        padding: 0 15px;
+        font-size: 14px;
+        height: 100%;
+    }
+
+    .custom-searchbox .search-btn {
+        background-color: white;
+        border: none;
+        padding: 0 15px;
+        color: #666;
+        font-size: 16px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .custom-searchbox:focus-within .input-group {
+        border-color: #333;
+    }
+
+/* Login and Sign Up Buttons */
+/* Login ve Sign Up Butonları */
+/* Login ve Sign Up Butonları */
+.custom-login-btn,
+.custom-signup-btn {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    padding: 10px 25px;
+    display: inline-block;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+/* Login Butonu - Arka plan şeffaf ve metin siyah */
+.custom-login-btn {
+    background-color: transparent; /* Şeffaf arka plan */
+    color: black; /* Siyah metin */
+    border: 1px solid #333; /* Siyah sınır */
+}
+
+/* Sign Up Butonu - Arka plan siyah ve metin beyaz */
+.custom-signup-btn {
+    background-color: black; /* Siyah arka plan */
+    color: white; /* Beyaz metin */
+    border: 1px solid #333; /* Siyah sınır */
+}

@@ -1,0 +1,308 @@
+﻿@model List<CourseLessonModel>
+@{
+    ViewData["Title"] = "Dersleri Düzenle";
+    Layout = "_layoutAdminLTE";
+}
+
+<div style="margin-left:270px; margin-top: 15px;">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1>Dersleri Güncelle: @ViewBag.CourseTitle</h1>
+    </div>
+    <hr />
+</div>
+
+<div class="container" style="margin-left:275px;margin-top:30px">
+    <form id="lessonForm" asp-action="EditLesson" method="post" enctype="multipart/form-data">
+        <div class="mb-4">
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary me-2">
+                    <i class="fas fa-save me-2"></i>Tüm Değişiklikleri Kaydet
+                </button>
+                <a asp-action="LessonList" class="btn btn-light">İptal</a>
+            </div>
+        </div>
+
+        <div id="lessonsContainer">
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <div class="card mb-4 lesson-card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0 text-white">
+                                <span class="lesson-number">Ders @(i + 1)</span>
+                            </h5>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <input type="hidden" asp-for="@Model[i].Id" />
+                        <input type="hidden" asp-for="@Model[i].CourseId" />
+
+                        <div class="row">
+                            <div class="col-md-3 thumbnail-container mb-3">
+                                @if (!string.IsNullOrEmpty(Model[i].Thumbnail))
+                                {
+                                    <img src="~/thumbnails/@Model[i].Thumbnail" class="current-thumbnail" alt="Current thumbnail" />
+                                }
+                                else
+                                {
+                                    <div class="no-thumbnail">
+                                        <i class="fas fa-image"></i>
+                                    </div>
+                                }
+                                <input type="file" name="Thumbnails[@i]" class="form-control mt-2" accept="image/*" />
+                            </div>
+                            
+                            <div class="col-md-9">
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label asp-for="@Model[i].Name" class="form-label">Ders Adı</label>
+                                            <input asp-for="@Model[i].Name" class="form-control" required />
+                                            <span asp-validation-for="@Model[i].Name" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label class="form-label">Video</label>
+                                            <div class="input-group">
+                                                <input type="file" name="Videos[@i]" class="form-control" accept="video/*" />
+                                                @if (!string.IsNullOrEmpty(Model[i].Video))
+                                                {
+                                                    <button type="button" class="btn btn-preview"
+                                                        onclick="showVideoPreview('@Url.Content($"~/videos/{Model[i].Video}")', '@Model[i].Name')">
+                                                        <i class="fas fa-play me-1"></i> Önizle
+                                                    </button>
+                                                }
+                                            </div>
+                                            @if (!string.IsNullOrEmpty(Model[i].Video))
+                                            {
+                                                <small class="text-muted d-block mt-1">
+                                                    <i class="fas fa-file-video"></i> @Model[i].Video
+                                                </small>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label asp-for="@Model[i].OrderNo" class="form-label">Sıra No</label>
+                                            <input asp-for="@Model[i].OrderNo" class="form-control" type="number" required />
+                                            <span asp-validation-for="@Model[i].OrderNo" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </form>
+</div>
+
+<div id="loadingOverlay" style="display:none;">
+    <div class="loading-spinner mb-3">
+        <div class="spinner-border text-primary" role="status">
+        </div>
+    </div>
+    
+    <div class="loading-text">
+        <p class="main-text">Video Yükleniyor...</p>
+        <p class="alt-text">Lütfen Bekleyiniz...</p>
+    </div>
+</div>
+
+<div class="modal fade" id="videoPreviewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Video Önizleme: <span id="videoTitle"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <video id="previewVideo" controls style="max-width: 100%; height: auto;">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    
+    <script>
+        document.getElementById('lessonForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const loadingOverlay = document.getElementById('loadingOverlay');
+
+            try {
+                loadingOverlay.style.display = 'block';
+                const form = e.target;
+                const formData = new FormData(form);
+
+                const axiosConfig = {
+                    method: 'post',
+                    url: form.action,
+                    data: formData,
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'X-CSRF-TOKEN': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    onUploadProgress: (progressEvent) => {
+                        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                        document.querySelector('.alt-text').textContent =
+                            `Yükleniyor... (${percentCompleted}%)`;
+
+                        if (percentCompleted === 100) {
+                            document.querySelector('.main-text').textContent = "İşleniyor...";
+                            document.querySelector('.alt-text').textContent = "Veriler kaydediliyor...";
+                        }
+                    }
+                };
+
+                const response = await axios(axiosConfig);
+                console.log('Sunucu yanıtı:', response);
+
+                if (response.data.success) {
+
+                    setTimeout(() => {
+                        window.location.href = '/Admin/LessonList'; 
+                    }, 1500);
+                } else {
+                    throw new Error(response.data.message || "Beklenmeyen bir hata oluştu");
+                }
+            } catch (error) {
+                console.error('Hata:', error);
+                loadingOverlay.style.display = 'none';
+            }
+        });
+
+
+
+        function showVideoPreview(videoUrl, videoName) {
+            const video = document.getElementById('previewVideo');
+            const titleSpan = document.getElementById('videoTitle');
+            video.src = videoUrl;
+            titleSpan.textContent = videoName;
+            const modal = new bootstrap.Modal(document.getElementById('videoPreviewModal'));
+            modal.show();
+        }
+
+        document.getElementById('videoPreviewModal').addEventListener('hidden.bs.modal', function () {
+            const video = document.getElementById('previewVideo');
+            video.pause();
+            video.src = '';
+        });
+
+        document.getElementById('lessonForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const loadingOverlay = document.getElementById('loadingOverlay');
+
+            try {
+                loadingOverlay.style.display = 'block';
+                const form = e.target;
+                const formData = new FormData(form);
+
+                const axiosConfig = {
+                    method: 'post',
+                    url: form.action,
+                    data: formData,
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'X-CSRF-TOKEN': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    onUploadProgress: (progressEvent) => {
+                        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                        document.querySelector('.alt-text').textContent =
+                            `Yükleniyor... (${percentCompleted}%)`;
+
+                        if (percentCompleted === 100) {
+                            document.querySelector('.main-text').textContent = "İşleniyor...";
+                            document.querySelector('.alt-text').textContent = "Veriler kaydediliyor...";
+                        }
+                    }
+                };
+
+                const response = await axios(axiosConfig);
+                console.log('Sunucu yanıtı:', response);
+
+                if (response && response.data) {
+                    console.log('Response data:', response.data);
+
+                    if (response.data.success === true && response.data.redirectUrl) {
+                        console.log('Yönlendirme URL\'i bulundu:', response.data.redirectUrl);
+
+
+                        window.location.href = "/Admin/LessonList";
+                    } else {
+                        console.log('Başarılı yanıt alınamadı veya redirectUrl eksik');
+                        throw new Error(response.data.message || "İşlem başarısız");
+                    }
+                } else {
+                    console.log('Geçersiz sunucu yanıtı');
+                    throw new Error("Sunucudan geçersiz yanıt alındı");
+                }
+
+            } catch (error) {
+                console.error('Hata detayları:', {
+                    message: error.message,
+                    response: error.response?.data,
+                    status: error.response?.status
+                });
+
+                loadingOverlay.style.display = 'none';
+            }
+        });
+
+    </script>
+
+    <style>
+        .lesson-card {
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            border: none;
+        }
+
+        .card-header {
+            background-color: #212529;
+            padding: 1rem;
+            border-bottom: none;
+        }
+
+        .current-thumbnail {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .no-thumbnail {
+            width: 100%;
+            height: 150px;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+
+        .no-thumbnail i {
+            font-size: 2rem;
+            color: #adb5bd;
+        }
+
+        .btn-preview {
+            background-color: #17a2b8;
+            color: white;
+            border: none;
+        }
+
+        .btn-preview:hover {
+            background-color: #138496;
+            color: white;
+        }
+    </style>
+}

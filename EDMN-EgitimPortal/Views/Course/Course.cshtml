@@ -1,0 +1,38 @@
+﻿@model IEnumerable<EgitimPortalFinal.Models.Course>
+
+@{
+    ViewData["Title"] = "Dersler";
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="main-carousel" >
+    <div class="main-carousel-slide active">
+        <img src="/img/slide1.jpg" alt="Slide 1" />
+        <div class="main-carousel-text">
+            <h1>Öğren, İlerle, Fark Yarat!</h1>
+            <p>Bugününüz (ve geleceğiniz) için beceriler. Bizimle başlayın.</p>
+        </div>
+    </div>
+    <div class="main-carousel-slide">
+        <img src="/img/slide2.jpg" alt="Slide 2" />
+        <div class="main-carousel-text">
+            <h1>Kendi Hikayeni Yaz</h1>
+            <p>Yeni becerilerle yaşamını dönüştür. Başarı hikayen burada başlıyor.</p>
+        </div>
+    </div>
+    <button class="main-carousel-prev">‹</button>
+    <button class="main-carousel-next">›</button>
+</div>
+<div class="container" style="margin-top: 50px;">
+    <h2 style="margin-top: 25px; margin-bottom: 25px;">Dersler</h2>
+    <div class="custom-tab">
+        <a href="#" class="tab-link active" data-tab="">Tümü</a>
+        <a href="#" class="tab-link" data-tab="Programlama">Programlama</a>
+        <a href="#" class="tab-link" data-tab="Wordpress">Wordpress</a>
+        <a href="#" class="tab-link" data-tab="SEO">SEO</a>
+    </div>
+    <div class="custom-card-container" id="course-container">
+    </div>
+</div>
+
+

@@ -1,0 +1,123 @@
+﻿@model CourseDetailsViewModel
+
+<div class="course-page">
+    <!-- Ana Video Bölümü -->
+    <div class="main-content">
+        <div class="video-section">
+            <div class="video-container">
+                @if (Model.Lessons.FirstOrDefault(l => l.Id == Model.CurrentLessonId)?.Video != null)
+                {
+                    <video id="courseVideo" class="tarzan-player" controls>
+                        <source src="/videos/@Model.Lessons.First(l => l.Id == Model.CurrentLessonId).Video" type="video/mp4">
+                        Tarayıcınız video elementini desteklemiyor.
+                    </video>
+                }
+                else
+                {
+                    <div class="no-video-placeholder">
+                        <p>Henüz bir video yüklenmedi!</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Course Description -->
+        <div class="course-content">
+            <h1 class="course-title">@Model.Course.Title</h1>
+            <p class="course-description">@Model.Course.Description</p>
+        </div>
+    </div>
+
+    <!-- Sağ Sidebar -->
+    <div class="course-sidebar">
+        <div class="sidebar-header">
+            <h2 class="sidebar-title">Course content</h2>
+        </div>
+        <div class="lessons-list">
+            @foreach (var lesson in Model.Lessons.OrderBy(l => l.OrderNo))
+            {
+                <div class="lesson-item @(lesson.Id == Model.CurrentLessonId ? "active" : "")"
+                     data-video="/videos/@lesson.Video">
+                    <a href="#" class="lesson-link">
+                        <div class="lesson-info">
+                              <div class="lesson-thumbnail">
+                                @if (!string.IsNullOrEmpty(lesson.Thumbnail))
+                                {
+                                    <img src="\thumbnails\@lesson.Thumbnail" alt="Video Thumbnail">
+                                }
+                                else
+                                {
+                                    <img src="\CoursePhotos\thumbnails\defaultCourseCover.png" alt="Default Thumbnail">
+                                }
+                                <i class="fas fa-play-circle"></i>
+                            </div>
+                            <div class="lesson-details">
+                                <span class="lesson-title">@lesson.Name</span>
+                                <span class="lesson-duration"></span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelector('.container').classList.replace('container', 'HBR');
+
+
+        const videoElement = document.getElementById('courseVideo');
+
+        // Video sürelerini hesapla ve göster
+        function calculateDuration(videoSrc, durationElement) {
+            const tempVideo = document.createElement('video');
+            tempVideo.src = videoSrc;
+
+            tempVideo.addEventListener('loadedmetadata', function () {
+                const duration = Math.round(tempVideo.duration);
+                const minutes = Math.floor(duration / 60);
+                const seconds = duration % 60;
+                durationElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            });
+
+            tempVideo.addEventListener('error', function () {
+                durationElement.textContent = '--:--';
+            });
+        }
+
+        // Sayfa yüklendiğinde tüm video sürelerini hesapla
+        document.querySelectorAll('.lesson-item').forEach(item => {
+            const videoSrc = item.dataset.video;
+            const durationSpan = item.querySelector('.lesson-duration');
+            if (videoSrc) {
+                calculateDuration(videoSrc, durationSpan);
+            }
+        });
+
+        // Video değiştirme işlevi
+        document.querySelectorAll('.lesson-item').forEach(item => {
+            item.querySelector('.lesson-link').addEventListener('click', function (event) {
+                event.preventDefault();
+
+                // Tüm active class'ları kaldır
+                document.querySelectorAll('.lesson-item').forEach(lessonItem => {
+                    lessonItem.classList.remove('active');
+                });
+
+                // Tıklanan öğeye active class ekle
+                item.classList.add('active');
+
+                // Video kaynağını güncelle
+                const videoSrc = item.dataset.video;
+                if (videoSrc && videoElement) {
+                    const videoSource = videoElement.querySelector('source');
+                    videoSource.src = videoSrc;
+                    videoElement.load();
+                    videoElement.play();
+                }
+            });
+        });
+    </script>
+}

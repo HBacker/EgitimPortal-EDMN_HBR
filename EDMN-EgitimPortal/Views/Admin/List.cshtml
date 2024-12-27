@@ -1,0 +1,67 @@
+﻿@model IEnumerable<EgitimPortalFinal.ViewModels.CourseModel>
+
+@{
+    ViewData["Title"] = "Kurslar";
+
+    Layout = "_layoutAdminLTE";
+}
+
+<h1 style="margin-left:270px;margin-top:15px">Kurs Listesi</h1>
+
+<p style="margin-left:270px">
+    <a asp-action="Create" class="btn btn-primary">Yeni Kurs Oluştur</a>
+</p>
+
+<div class="col-md-10">
+    <table class="table" style="margin-left:250px">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Title)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Description)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Tag)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PhotoUrl)
+                </th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Title)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Tag)
+                    </td>
+                    <td>
+                        <img src="~/CoursePhotos/@item.PhotoUrl" style="width:100px; height:50px">
+                    </td>
+                    <td></td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Düzenle</a>
+                    </td>
+                    <td>
+                        <a asp-controller="Course" asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">İçerik</a>
+                    </td>
+                    <td>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Sil</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

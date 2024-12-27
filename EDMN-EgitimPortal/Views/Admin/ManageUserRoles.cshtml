@@ -1,0 +1,79 @@
+﻿@{
+    ViewData["Title"] = "Kullanıcının Rolünü Düzenle";
+
+    Layout = "_layoutAdminLTE";
+}
+
+@model List<AppUser>
+
+<div class="col-md-10">
+    <h2 style="margin-left:275px; margin-top:30px">Kullanıcı Rolü Düzenle</h2>
+    <table class="table" style="margin-left:275px; margin-top:40px">
+        <thead>
+            <tr>
+                <th>Kullanıcı Adı</th>
+                <th>Mevcut Rol</th>
+                <th>Rol Seç</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+
+                var userRoles = (List<string>)ViewBag.UserRoles[user.Id];
+
+                var currentRole = userRoles.FirstOrDefault() ?? ""; // Eğer rol yoksa boş string döner
+
+                <tr>
+                    <td>@user.UserName</td>
+                    <td>@currentRole</td>
+                    <td>
+                        <form method="post" onsubmit="return validateForm(this);">
+                            <input type="hidden" name="userId" value="@user.Id" />
+                            <select name="selectedRoles" class="form-select form-select-sm" aria-label="Small select example">
+                                <option value="">Seçiniz...</option>
+                                @foreach (var role in (IEnumerable<AppRole>)ViewBag.Roles)
+
+                                {
+
+                                    if (role.Name == currentRole)
+
+                                    {
+                                        <option value="@role.Id" selected>@role.Name</option>
+                                    }
+
+                                    else
+
+                                    {
+                                        <option value="@role.Id">@role.Name</option>
+                                    }
+
+                                }
+                            </select>
+                            <button type="submit" class="btn btn-success" style="margin-left:200px">Güncelle</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        function validateForm(form) {
+            var selectedRole = form.selectedRoles.value;
+            if (!selectedRole) {
+                Swal.fire({
+                    title: 'Uyarı!',
+                    text: 'Lütfen bir rol seçin.',
+                    icon: 'warning',
+                    confirmButtonText: 'Tamam'
+                });
+                return false;
+            }
+            return true;
+        }
+    </script>
+}
